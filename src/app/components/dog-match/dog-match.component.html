@@ -1,0 +1,23 @@
+<h2 mat-dialog-title>Match found</h2>
+<mat-dialog-content class="mat-typography">
+    <h3>We found the perfect dog for you!!</h3>
+    <ng-container *ngIf="dog$ | async as dog; else loading">
+        <div>
+            <div *ngIf="isImageLoadingError">
+                <img src=" /assets/cat-loading-error.gif" />
+            </div>
+            <img [src]=dog.img *ngIf="!isImageLoadingError" (error)="isImageLoadingError=true;" />
+        </div>
+        <div>
+            <mat-label>Name:</mat-label>{{dog.name}}
+            <mat-label>Age:</mat-label>{{dog.age}}
+            <mat-label>Breed:</mat-label>{{dog.breed}}
+        </div>
+    </ng-container>
+    <ng-template #loading>
+        <mat-spinner></mat-spinner>
+    </ng-template>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Close</button>
+</mat-dialog-actions>

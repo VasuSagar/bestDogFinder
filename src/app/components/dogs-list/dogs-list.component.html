@@ -1,0 +1,111 @@
+<form [formGroup]="dogFilterForm">
+    <div>
+        <div class="left-align form-margin-right">
+            <mat-form-field>
+                <mat-select formControlName="selectedDogBreed" placeholder="Dog Breeds" [multiple]="true" #multiSelect>
+                    <mat-option>
+                        <ngx-mat-select-search [formControl]="dogBreedSearchCritera"
+                            placeholderLabel="Filter Dog breeds"
+                            noEntriesFoundLabel="No matching Dog breed found"></ngx-mat-select-search>
+                    </mat-option>
+                    <mat-option *ngFor="let breedName of filteredDogBreeds | async" [value]="breedName">
+                        {{breedName}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+        <div class="left-align form-margin-right">
+            <mat-form-field>
+                <mat-label>Min Age</mat-label>
+                <input matInput type="number" formControlName="minAge">
+                <mat-error
+                    *ngIf="dogFilterForm.get('minAge')?.hasError('min') || dogFilterForm.get('minAge')?.hasError('max')">Please
+                    enter age in 0-15 range</mat-error>
+            </mat-form-field>
+        </div>
+
+        <div class="left-align">
+            <mat-form-field>
+                <mat-label>Max Age</mat-label>
+                <input matInput type="number" formControlName="maxAge">
+                <mat-error
+                    *ngIf="dogFilterForm.get('maxAge')?.hasError('min') || dogFilterForm.get('maxAge')?.hasError('max')">Please
+                    enter age in 0-15 range</mat-error>
+            </mat-form-field>
+        </div>
+    </div>
+</form>
+
+<div class="right-align">
+    <button mat-raised-button color="primary" (click)="getDogsMatch()" [disabled]="dogSelectionModel.selected.length<=0"
+        class="form-margin-right">Get
+        Match</button>
+
+    <button mat-raised-button color="warn" (click)="logout()">Log out</button>
+</div>
+<div *ngIf="isLoading" class="spinner-container">
+    <mat-spinner></mat-spinner>
+</div>
+<div>
+    <table mat-table [dataSource]="dogsDataSource" class="mat-elevation-z8" matSort [matSortActive]="sortField"
+        [matSortDirection]="sortDirection" (matSortChange)="tableSortChange($event)">
+
+        <ng-container matColumnDef="select">
+            <th mat-header-cell *matHeaderCellDef>
+                <mat-checkbox (change)="$event ? masterToggle() : null"
+                    [checked]="dogSelectionModel.hasValue() && isEntirePageSelected()"
+                    [indeterminate]="dogSelectionModel.hasValue() && !isEntirePageSelected()">
+                </mat-checkbox>
+            </th>
+            <td mat-cell *matCellDef="let row">
+                <mat-checkbox (click)="$event.stopPropagation()"
+                    (change)="$event ? dogSelectionModel.toggle(row) : null"
+                    [checked]="dogSelectionModel.isSelected(row)">
+                </mat-checkbox>
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear> Name </th>
+            <td mat-cell *matCellDef="let dog"> {{dog.name}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="breed">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear> Breed </th>
+            <td mat-cell *matCellDef="let dog"> {{dog.breed}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="img">
+            <th mat-header-cell *matHeaderCellDef> Image </th>
+            <td mat-cell *matCellDef="let dog">
+
+                <div *ngIf="dog.isImageLoading">
+                    <img class="table-dog-image" src=" /assets/dog-loader.gif" />
+                </div>
+                <div *ngIf="dog.isImageLoadingError">
+                    <img class="table-dog-image" src=" /assets/cat-loading-error.gif" />
+                </div>
+                <img class="table-dog-image" [src]=dog.img [ngStyle]="{visibility:dog.isImageLoading?'hidden':''}"
+                    (load)="dog.isImageLoading=false;" (error)="dog.isImageLoading=false; dog.isImageLoadingError=true;"
+                    *ngIf="!dog.isImageLoadingError" />
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="age">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear> Age </th>
+            <td mat-cell *matCellDef="let dog"> {{dog.age}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="zip_code">
+            <th mat-header-cell *matHeaderCellDef> Zip Code </th>
+            <td mat-cell *matCellDef="let dog"> {{dog.zip_code}} </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="dogSelectionModel.toggle(row)"></tr>
+    </table>
+</div>
+
+<mat-paginator [pageSizeOptions]="[5, 10, 20]" [length]="totalElementLength" [pageSize]="dogIdQueryParams.size"
+    showFirstLastButtons aria-label="Select page of dog list" (page)="onPaginationChanged($event)" #paginator>
+</mat-paginator>

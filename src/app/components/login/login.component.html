@@ -1,0 +1,24 @@
+<div>
+    <form [formGroup]="loginForm" (ngSubmit)="submitLoginForm()">
+        <div>
+            <mat-form-field>
+                <mat-label>Enter your name</mat-label>
+                <input matInput placeholder="Vasu" formControlName="name" required data-testid="loginFormName">
+                <mat-error *ngIf="!loginForm.controls['name'].valid">Enter Name</mat-error>
+            </mat-form-field>
+        </div>
+        <div>
+            <mat-form-field>
+                <mat-label>Enter your email</mat-label>
+                <input matInput placeholder="vasu@example.com" formControlName="email" required
+                    data-testid="loginFormEmail">
+                <mat-error *ngIf="loginForm.controls['email'].errors?.required">Enter an email</mat-error>
+                <mat-error *ngIf="loginForm.controls['email'].errors?.email">Enter correct email</mat-error>
+            </mat-form-field>
+        </div>
+        <div>
+            <button mat-raised-button color="primary" [disabled]="loginForm.invalid" type="submit"
+                data-testid="loginFormSubmit">Submit</button>
+        </div>
+    </form>
+</div>

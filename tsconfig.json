@@ -22,12 +22,19 @@
     "lib": [
       "ES2022",
       "dom"
+    ],
+    "emitDecoratorMetadata": true,
+    "esModuleInterop": true,
+    "types": [
+      "jest",
+      "@testing-library/jest-dom"
     ]
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
     "strictInjectionParameters": true,
     "strictInputAccessModifiers": true,
-    "strictTemplates": true
+    "strictTemplates": false,
+    "noPropertyAccessFromIndexSignature": false
   }
 }
